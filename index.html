@@ -1,4 +1,5 @@
-<canvas id="doodle" width="900" height="900" style="border:1px solid #7c7c7c;"></canvas>
+<canvas id="owind" width="800" height="800" style="border:1px solid #7c7c7c;"></canvas>
+<canvas id="owind2" width="400" height="400" style="border:1px solid #7c7c7c;"></canvas>
 
 <script type="text/javascript">
     // copyright. 오바람, BlueArchive. LOL
@@ -7,96 +8,13 @@
 
     base_image = new Image();
     base_image.src = './image/sensei.png';
-    base_image.onload = function() {
-        //ctx.drawImage(base_image, 600, 600, 300, 300);
-    }
+    base_image.onload = function() {}
 
     // CLASS
     class Point {
         constructor(x, y) {
             this.x = x
             this.y = y
-        }
-    }
-
-    class Triangle {
-        constructor(a, b, c, angle, height) {
-            this.a = a
-            this.b = b
-            this.c = c
-            this.angle = angle
-            this.height = height
-        }
-
-        draw(ctx, strokeColor, fillColor, lineWidth = 10, bFill = false) {
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = lineWidth
-            ctx.beginPath();
-            ctx.moveTo(this.a.x, this.a.y)
-            ctx.lineTo(this.b.x, this.b.y)
-            ctx.lineTo(this.c.x, this.c.y)
-            ctx.lineTo(this.a.x, this.a.y)
-            ctx.fillStyle = fillColor;            
-            if(bFill) { ctx.fill(); }
-            ctx.stroke();
-            ctx.closePath();
-
-            var height = Math.sqrt(Math.pow(this.height, 2)) - this.height / 2
-            var d = new Point((this.b.x + this.c.x) / 2, (this.b.y + this.c.y) / 2)
-        }
-
-        drawStep(ctx, color, steps, stepSize, lineWidth) {
-            ctx.strokeStyle = 'white'
-            ctx.lineWidth = lineWidth
-            ctx.beginPath();
-            ctx.moveTo(this.a.x, this.a.y)
-            ctx.lineTo(this.b.x, this.b.y)
-            ctx.lineTo(this.c.x, this.c.y)
-            ctx.lineTo(this.a.x, this.a.y)
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
-
-            var height = Math.sqrt(Math.pow(this.height, 2)) - this.height / 2
-            var d = new Point((this.b.x + this.c.x) / 2, (this.b.y + this.c.y) / 2)
-
-            // Draw inner lines
-            ctx.strokeStyle = 'white'
-            ctx.lineWidth = lineWidth
-
-            for (var i = 1; i <= steps; i++) {
-                var r = (stepSize * i) / height
-                var c = new Point(
-                    this.a.x + (d.x - this.a.x) * r,
-                    this.a.y + (d.y - this.a.y) * r,
-                )
-                var innerTriangle = newTriangle(c, this.angle, this.height - r * this.height)
-                ctx.beginPath();
-                ctx.moveTo(innerTriangle.a.x, innerTriangle.a.y)
-                ctx.lineTo(innerTriangle.b.x, innerTriangle.b.y)
-                ctx.moveTo(innerTriangle.a.x, innerTriangle.a.y)
-                ctx.lineTo(innerTriangle.c.x, innerTriangle.c.y)
-                ctx.stroke();
-                ctx.closePath();
-            }
-
-            // Draw white hollow part
-
-            var r = (stepSize * steps) / height
-            var c = new Point(
-                this.a.x + (d.x - this.a.x) * r,
-                this.a.y + (d.y - this.a.y) * r,
-            )
-            var innerTriangle = newTriangle(c, this.angle, this.height - r * this.height)
-            ctx.beginPath();
-            ctx.moveTo(innerTriangle.a.x, innerTriangle.a.y)
-            ctx.lineTo(innerTriangle.b.x, innerTriangle.b.y)
-            ctx.lineTo(innerTriangle.c.x, innerTriangle.c.y)
-            ctx.lineTo(innerTriangle.a.x, innerTriangle.a.y)
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.closePath();
         }
     }
 
@@ -180,7 +98,6 @@
                 ctx.strokeStyle = strokeColor;
                 ctx.lineWidth = lineWidth
                 ctx.save();
-                //ctx.beginPath();
 
                 const angle = Math.PI * 2 / this.sides;
                 const x = 0;
@@ -192,10 +109,6 @@
                     tmpPoly.draw(ctx, strokeColor, fillColor, lineWidth, bFill);
                     ctx.rotate(2 * Math.PI / this.numRotation);
                 }
-                
-                //ctx.fillStyle = fillColor;
-                //if(bFill) { ctx.fill(); }
-                //ctx.stroke();
 
                 ctx.restore();
             }
@@ -204,7 +117,6 @@
                 ctx.strokeStyle = strokeColor;
                 ctx.lineWidth = lineWidth
                 ctx.save();
-                //ctx.beginPath();
 
                 const angle = Math.PI * 2 / this.sides;
                 const x = 0;
@@ -216,10 +128,6 @@
                     tmpPoly.draw(ctx, strokeColor, fillColor, lineWidth, bFill);
                     ctx.rotate(2 * Math.PI / this.numRotation);
                 }
-                
-                //ctx.fillStyle = fillColor;
-                //if(bFill) { ctx.fill(); }
-                //ctx.stroke();
 
                 ctx.restore();
             }
@@ -304,13 +212,14 @@
     }
 
     // MAIN FUNCTIONS
-
-    // Begin drawing
-    var canvas = document.getElementById('doodle')
+    var canvas = document.getElementById('owind')
     var ctx = canvas.getContext('2d')
     var font = '20px sans-serif';
     var hasInput = false;
     var ptGlobalCenter = new Point(centerWidth, centerHeight);
+
+    var canvas2 = document.getElementById('owind2')
+    var ctx2 = canvas2.getContext('2d')
 
     // input box: 
     function addInput(x, y) 
@@ -345,37 +254,31 @@
     {
         var keyCode = e.keyCode;
         if (keyCode === 13) {
-            // Draw name of teacher
             var seed = cyrb128(this.value);
             var randFunc = sfc32(seed[0], seed[1], seed[2], seed[3]);
 
             var cyrbNum = randFunc()
-
             ctx.save();
             ctx.translate(0, 0);
-            //drawText(this.value, parseInt(this.style.left, 10), parseInt(this.style.top, 10));
-            //drawText(cyrbNum, parseInt(this.style.left, 10), parseInt(this.style.top, 10)+20);
             document.body.removeChild(this);
             hasInput = false;
-
             ctx.translate(centerWidth, centerHeight);
-            // draw halo
             drawHalo(cyrbNum);
-
             ctx.restore();
             
-            drawSensei(ctx);
+            drawSensei();
             drawText(this.value + ' 선생님', parseInt(this.style.left, 10), parseInt(this.style.top, 10));
         }
     }
 
-    function drawSensei(ctx)
+    function drawSensei()
     {
-        copyImg = new Image();
-        copyImg.src = canvas.toDataURL();
-        ctx.drawImage(copyImg, 690, 630, 180, 180);
+        //get the destination context
+        ctx2 = canvas2.getContext('2d');
+        //copy the data
+        ctx2.drawImage(canvas, 135, 50, 200, 200);
 
-        ctx.drawImage(base_image, 600, 600, 300, 300);
+        ctx2.drawImage(base_image, 0, 0, 400, 400);
     }
 
     function getPolygonSides(seed)
@@ -411,7 +314,7 @@
     function drawHalo(seed)
     {
         //-------------- number randoms
-        var rotationNum = (seed * 100) % 6; // 0~5 : 1(not), 2(180), 3(120), 4(90), 5(72), 6(60), 8(45)
+        var rotationNum = (seed * 100) % 6;
         var bgPolygonSide = getPolygonSides(seed);
         var bgPolygonSide2 = getPolygonSides(seed* 3.4);
         var mnPolygonSide = getPolygonSides(seed * 42.0);
@@ -432,21 +335,18 @@
         var side1 = arrSide[sideIdx];
 
         //-------------- halo
-        var bgHaloOutter = new Polygon(0, 0, 360, bgPolygonSide, offsetAngle0); //fill, 350
-        var bgHaloInner = new Polygon(0, 0, 300, bgPolygonSide2, offsetAngle1); //fill white 300
-        var mainHalo = new Polygon(0, 0, r1, mnPolygonSide, polyAngle1); // dist=rad 180~300
-        var mainHaloDetails = new Halo(d1, offsetAngle2, numRot1, side1, r2, polyAngle2); // rad 100~200 / dist = rand if (dist < 300 - rad && dist > 80)
-        //var mainHaloDetails = new Halo(d1, offsetAngle2, numRot1, 0, r2); // rad 100~200 / dist = rand if (dist < 300 - rad && dist > 80)
-        var centerHalo = new Polygon(0, 0, 45, scPolygonSide, offsetAngle1); // inside 60, 90, 120
+        var bgHaloOutter = new Polygon(0, 0, 360, bgPolygonSide, offsetAngle0);
+        var bgHaloInner = new Polygon(0, 0, 300, bgPolygonSide2, offsetAngle1);
+        var mainHalo = new Polygon(0, 0, r1, mnPolygonSide, polyAngle1);
+        var mainHaloDetails = new Halo(d1, offsetAngle2, numRot1, side1, r2, polyAngle2);
+        var centerHalo = new Polygon(0, 0, 45, scPolygonSide, offsetAngle1);
 
         // //-------------- draw
         var firstColor = getColor(seed, 1.0);
         var secondColor = getColor(seed, 1.2);
         var edgeColor = getColor(seed, 1.4);
         var brightColor = getColor(seed, 1.2, 0.0, 0.1, 0.1);
-        //var shiftedColor = getColor(seed, 1.2, 5.0, 0.1, 0.1);
-
-
+        
         ctx.save();
         ctx.rotate(2 * Math.PI / 270);
         bgHaloOutter.draw(ctx, firstColor, firstColor, 10, true);
@@ -462,34 +362,5 @@
 
     // Main
     addInput(40, 40);
-
-    // base_image = new Image();
-    // base_image.src = 'https://nxm-webview-image.akamaized.net/webcoupon/bluearchive/bluearchive_header_ko.jpg';
-    // base_image.onload = function(){
-    //     ctx.drawImage(base_image, 0, 900, 1000, 100);
-    // }
-
-    
-    
-
-    
-
-
-    //todo list
-    // make circle 만들기
-    // 곡선 드로잉 만들기..? - 만들순 있는데 어떻게 닫히게 만들지?
-
-    // 넘버 파싱
-    // 도형 recursive 한 느낌으로 돌리는거 1개 2개
-    // 가운데 서클은 한개만 (테두리 선이 2개일수도 있음)
-    // 색깔
-    // drawMultiPolygon
-    // 3, 4, 5, 6, 8 각형 도형만 만들 수 있게
-    // n각형 도형에 원, 사각형 삼각형 등 내부 도형도 넣을 수 있게
-
-    
-
-    // 로고 넣기
-    // 이미지 저장 기능
 
 </script>
